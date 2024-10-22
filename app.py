@@ -18,25 +18,34 @@ def scrape(listu):
     wait=WebDriverWait(driver,10)
     element = wait.until(EC.presence_of_element_located((By.ID, "tbl_Gazette")))   
     target_rows=[]
-    target_rows.append(element.find_element(By.XPATH, ".//tr[td[9]/span[text()='{str}']]".format(str=listu[0])))
-    print(target_rows)
+    xpath_expression = ".//tr[td[9]/span[text()='" + "' or text()='".join(listu) + "']]"
+    print(xpath_expression)
+# Find the rows based on the XPath expression
+    for i in range(len(listu)):
+        target_rows.append(element.find_element(By.XPATH, "//tr[td[9]/span[text()='{listu}']]".format(listu=listu[i])))   
+        print('ok')
+    print(target_rows) 
+    return
     for i in range(len(target_rows)):
         print(i)
         time.sleep(5)
         try:
             target_rows[i].find_element(By.XPATH, "//input[@type='image' and @src='images/pdf_icon.png']").click()
         except:
-            print('stfu')
-            return 'stfu'
+            target_rows.append(element.find_element(By.XPATH, xpath_expression))
+            target_rows[i].find_element(By.XPATH, "//input[@type='image' and @src='images/pdf_icon.png']").click()
         print('clicked')
+        time.sleep(10)
         wait.until(EC.new_window_is_opened([main]))
         window=driver.window_handles
         driver.switch_to.window(window[1])
         print(driver.current_url)
         print('****************')
         print('closing')
+        time.sleep(10)
         driver.close()
         print("tab closed")
+        time.sleep(5)
         driver.switch_to.window(main)
         
 
